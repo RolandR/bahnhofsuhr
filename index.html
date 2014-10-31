@@ -3,8 +3,8 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 		<title>Bahnhofsuhr</title>
 	</head>
-	<body>
-		<canvas id="clock" width="900" height="900">
+	<body style="background-color: #000000;">
+		<canvas id="clock" width="900" height="900" style="margin: auto; display: block; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px;">
 		</canvas>
 		<canvas id="hidden" style="display: none;" width="900" height="900">
 		</canvas>
@@ -27,7 +27,6 @@
 		minuteHand:				document.getElementById('minuteHand'),	// The minute hand is pre-rendered here
 		secondsHand:			document.getElementById('secondsHand'),	// The seconds hand is pre-rendered here
 		renderCanvas:			document.getElementById('clock'), 		// The visible clock, the hands are rendered here
-		clockDiameter: 			document.documentElement.clientHeight - 20,									// Diameter of the clock in pixels
 		backgroundColour: 		'rgb(240, 240, 240)',					// RGB colour of the clock face
 		foregroundColour: 		'rgb(20, 20, 20)',						// RGB colour of the minute/hour hands and the minute indices
 		secondsColour: 			'rgb(210, 0, 0)',						// RGB colour of the seconds hand
@@ -59,7 +58,6 @@
 		var minuteHand = args.minuteHand;
 		var secondsHand = args.secondsHand;
 		var renderCanvas = args.renderCanvas;
-		var clockDiameter = args.clockDiameter;
 		var backgroundColour = args.backgroundColour;
 		var foregroundColour = args.foregroundColour;
 		var secondsColour = args.secondsColour;
@@ -84,26 +82,46 @@
 		var minuteHandJumpDuration = args.minuteHandJumpDuration;
 
 		var defaultSize = 100; // Use as reference size, then scale everything according to clockDiameter.
+		var clockDiameter = 0;
 
 		var renderCtx = renderCanvas.getContext('2d');
 
 		var handPadding = 10; // To prevent effects from antialiasing causing parts to be cut off
 		
 		var context = hiddenCanvas.getContext('2d');
-		hiddenCanvas.width = clockDiameter;
-		hiddenCanvas.height = clockDiameter;
 		var center = defaultSize / 2;
 		
 	// Scale
-		var scaleFactor = clockDiameter/defaultSize;
-		context.scale(scaleFactor, scaleFactor);
+		var scaleFactor = 0;
 
+		scale();
+		//renderAll();
+
+		window.onresize = scale;
+
+	function scale(){
+		if(window.innerWidth > window.innerHeight){
+			clockDiameter = window.innerHeight;
+		} else {
+			clockDiameter = window.innerWidth;
+		}
+		clockDiameter = clockDiameter -20;
+		scaleFactor = clockDiameter/defaultSize;
+		hiddenCanvas.width = clockDiameter;
+		hiddenCanvas.height = clockDiameter;
+
+		renderAll();
+	}
+
+	function renderAll(){
+		context.scale(scaleFactor, scaleFactor);
 		renderClockCircle();
 		renderFiveMinuteSteps();
 		renderMinuteSteps();
 		renderHourHand();
 		renderMinutesHand();
 		renderSecondsHand();
+	}
 		
 	// Render basic circle
 	function renderClockCircle(){
