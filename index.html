@@ -84,6 +84,10 @@
 		var minuteHandJumpDuration = args.minuteHandJumpDuration;
 
 		var defaultSize = 100; // Use as reference size, then scale everything according to clockDiameter.
+
+		var renderCtx = renderCanvas.getContext('2d');
+
+		var handPadding = 10; // To prevent effects from antialiasing causing parts to be cut off
 		
 		var context = hiddenCanvas.getContext('2d');
 		hiddenCanvas.width = clockDiameter;
@@ -93,14 +97,24 @@
 	// Scale
 		var scaleFactor = clockDiameter/defaultSize;
 		context.scale(scaleFactor, scaleFactor);
+
+		renderClockCircle();
+		renderFiveMinuteSteps();
+		renderMinuteSteps();
+		renderHourHand();
+		renderMinutesHand();
+		renderSecondsHand();
 		
-	// Render basic circle	
+	// Render basic circle
+	function renderClockCircle(){
 		context.beginPath();
 		context.arc(center, center, defaultSize/2, 0, 2 * Math.PI, false);
 		context.fillStyle = backgroundColour;
 		context.fill();
+	}
 		
 	// Render five minute steps
+	function renderFiveMinuteSteps(){
 		context.translate(center, center);
 		for(var i = 0; i <= 12; i++){
 			context.save();
@@ -112,8 +126,10 @@
 	  
 			context.rotate(Math.PI / 6);
 		}
+	}
 		
 	// Render minute steps
+	function renderMinuteSteps(){
 		for(var i = 0; i <= 60; i++){
 			if(i%5 != 0){
 				context.save();
@@ -125,10 +141,10 @@
 			}
 			context.rotate(Math.PI / 30);
 		}
+	}
 		
 	// Render static hour hand
-		
-		var handPadding = 10; // To prevent effects from antialiasing causing parts to be cut off
+	function renderHourHand(){
 		
 		hourHand.width = hourHandLength + handPadding;
 		if(hourHandInnerWidth > hourHandOuterWidth){
@@ -166,9 +182,10 @@
 		
 		hourHandContext.closePath();
 		hourHandContext.fill();
+	}
 		
 	// Render static minute hand
-		
+	function renderMinutesHand(){
 		minuteHand.width = minuteHandLength + handPadding;
 		if(minuteHandInnerWidth > minuteHandOuterWidth){
 			minuteHand.height = minuteHandInnerWidth + handPadding;
@@ -205,8 +222,10 @@
 		
 		minuteHandContext.closePath();
 		minuteHandContext.fill();
+	}
 		
 	// Render static seconds hand
+	function renderSecondsHand(){
 		
 		secondsHand.width = secondsHandLength + handPadding;
 		secondsHand.height = secondsHandRadius * 2 + handPadding/2;
@@ -227,9 +246,8 @@
 		secondsHandContext.beginPath();
 		secondsHandContext.arc(secondsHandLength - secondsHandRadius + handPadding * (1 - secondsHandPivot * 0.01), halfSecondsWidth, secondsHandRadius, 0, 2 * Math.PI, false);
 		secondsHandContext.fill();
-		
-		
-		renderCtx = renderCanvas.getContext('2d');
+
+	}
 		
 	// Display on visible canvas
 		function render(){
