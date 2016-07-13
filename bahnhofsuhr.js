@@ -204,9 +204,11 @@ function Bahnhofsuhr(containerId, args){
 
 	scale();
 
+	/* Set time to be displayed, in milliseconds since January 1, 1970, 00:00:00 UTC */
 	function setTime(newTime){
 		var currentTime = Date.now();
-		timeOffset = currentTime - newTime;
+		timeOffset = newTime - currentTime;
+		initialRender = true;
 	}
 
 	function scale(){
@@ -487,7 +489,7 @@ function Bahnhofsuhr(containerId, args){
 	// Display on visible canvas
 	function render(){
 		
-		var currentdate = new Date(); 
+		var currentdate = new Date(Date.now() + timeOffset); 
 		//var currentdate = new Date((currentdate.getTime()-1400000000000)*10000);
 		var currentHour = currentdate.getHours();
 		var currentMinute = currentdate.getMinutes();
@@ -586,7 +588,11 @@ function Bahnhofsuhr(containerId, args){
 	};
 
 	return {
-		 scale: scale
+		/* Fit clock to container size */
+		scale: scale
+
+		/* Set time to be displayed, in milliseconds since January 1, 1970, 00:00:00 UTC */
 		,setTime: setTime
 	};
+	
 }
