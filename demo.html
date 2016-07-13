@@ -6,6 +6,9 @@
 			Demo
 		</title>
 		<style>
+			div{
+				outline: 1px #AAAAAA solid;
+			}
 			#uhr-200px{
 				width: 212px;
 				height: 212px;
@@ -28,13 +31,14 @@
 		</div>
 		<div id="big">
 		</div>
+		<br />
 		<div id="debug">
 		</div>
 
 		<script type="text/javascript" src="./bahnhofsuhr.js"></script>
 		<script type="text/javascript">
 			var uhr = new Bahnhofsuhr("uhr-200px", {debugMode: true});
-			var uhr2 = new Bahnhofsuhr("big", {debugMode: true});
+			var uhr2 = new Bahnhofsuhr("big", {debugMode: true, showBorder: true});
 		</script>
 	</body>
 </html>

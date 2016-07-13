@@ -101,10 +101,19 @@ function Bahnhofsuhr(containerId, args){
 	var shadowBlur =			args.shadowBlur 			=== undefined ? 1 : args.shadowBlur;
 
 	// Shadow color
-	var shadowColor =			args.shadowColor 			=== undefined ? "rgba(0, 0, 0, 0.4)" : args.shadowColor;
+	var shadowColor =			args.shadowColor 			=== undefined ? "rgba(0, 0, 20, 0.4)" : args.shadowColor;
 
 	// Debug mode
 	var debugMode =				args.debugMode 				=== undefined ? false : args.debugMode;
+
+	// Show border around clock face, true or false
+	var showBorder =			args.showBorder 			=== undefined ? false : args.showBorder;
+
+	// Border width, in percent of clock diameter
+	var borderWidth =			args.borderWidth 			=== undefined ? 2 : args.borderWidth;
+
+	// Border color
+	var borderColor =			args.borderColor 			=== undefined ? "rgb(150, 150, 150)" : args.borderColor;
 
 
 	var faceCanvas = document.createElement("canvas");
@@ -128,8 +137,10 @@ function Bahnhofsuhr(containerId, args){
 	container.appendChild(faceCanvas);
 	container.appendChild(renderCanvas);
 
+	var timeOffset = 0; // is changed when setTime is called
 
 	var defaultSize = 100; // Use as reference size, then scale everything according to clockDiameter.
+	var center = defaultSize / 2;
 	var clockDiameter = 0;
 
 	var renderCtx = renderCanvas.getContext('2d');
@@ -137,7 +148,6 @@ function Bahnhofsuhr(containerId, args){
 	var handPadding = 10; // To prevent effects from antialiasing causing parts to be cut off
 	
 	var faceCtx = faceCanvas.getContext('2d');
-	var center = defaultSize / 2;
 	
 	// Scale
 	var scaleFactor = 0;
@@ -152,6 +162,11 @@ function Bahnhofsuhr(containerId, args){
 	})();
 
 	scale();
+
+	function setTime(newTime){
+		var currentTime = Date.now();
+		timeOffset = currentTime - newTime;
+	}
 
 	function scale(){
 		
@@ -177,13 +192,20 @@ function Bahnhofsuhr(containerId, args){
 			faceCanvas.style.marginLeft = "0px";
 			renderCanvas.style.marginLeft = "0px";
 		}
-		clockDiameter = clockDiameter;
-		scaleFactor = clockDiameter/defaultSize;
-		
+
 		faceCanvas.width = clockDiameter;
 		faceCanvas.height = clockDiameter;
 		renderCanvas.width = clockDiameter;
 		renderCanvas.height = clockDiameter;
+
+		if(showBorder){
+			var borderScale = clockDiameter / (clockDiameter*2*(borderWidth/100));
+			clockDiameter -= clockDiameter / borderScale;
+			borderWidth += borderWidth / (borderScale - 1);
+			center = defaultSize/2 + borderWidth;
+		}
+
+		scaleFactor = clockDiameter/defaultSize;
 
 		if(showShadow){
 			var xOffset = (shadowXOffset / 100) * clockDiameter;
@@ -218,6 +240,7 @@ function Bahnhofsuhr(containerId, args){
 		
 	// Render basic circle
 	function renderClockCircle(){
+		faceCtx.save();
 		faceCtx.beginPath();
 		faceCtx.arc(
 			center,
@@ -227,9 +250,24 @@ function Bahnhofsuhr(containerId, args){
 			2 * Math.PI,
 			false
 		);
-		faceCtx.save();
 		faceCtx.fillStyle = backgroundColor;
 		faceCtx.fill();
+		
+		if(showBorder){
+			faceCtx.beginPath();
+			faceCtx.arc(
+				center,
+				center,
+				defaultSize/2 + borderWidth/2,
+				0,
+				2 * Math.PI,
+				false
+			);
+			faceCtx.strokeStyle = borderColor;
+			faceCtx.lineWidth = borderWidth;
+			faceCtx.stroke();
+		}
+		
 		faceCtx.restore();
 	}
 		
@@ -404,8 +442,8 @@ function Bahnhofsuhr(containerId, args){
 		renderCtx.save();
 
 		renderCtx.translate(
-			clockDiameter/2,
-			clockDiameter/2
+			center*scaleFactor,
+			center*scaleFactor
 		);
 		renderCtx.rotate(1.5*Math.PI);
 		
@@ -455,6 +493,7 @@ function Bahnhofsuhr(containerId, args){
 	};
 
 	return {
-		scale: scale
+		 scale: scale
+		,setTime: setTime
 	};
 }
