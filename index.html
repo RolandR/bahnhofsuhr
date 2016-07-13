@@ -1,363 +1,39 @@
 <!DOCTYPE html>
-<!-- saved from url=(0033)http://rolandrytz.ch/various/sbb/ -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<html>
+	<head>
+		<meta charset="UTF-8">
 		<title>Bahnhofsuhr</title>
+		<style>
+
+			*{
+				box-sizing: border-box;
+				margin: 0px;
+				padding: 0px;
+			}
+
+			html, body{
+				width: 100%;
+				height: 100%;
+			}
+			
+			body{
+				/*background-color: #000000;*/
+			}
+			
+			#uhr{
+				width: 100%;
+				height: 100%;
+				padding: 10px;
+			}
+		</style>
 	</head>
-	<body style="background-color: #000000;">
-		<canvas id="clock" width="900" height="900" style="margin: auto; display: block; position: absolute; top: 0px; bottom: 0px; left: 0px; right: 0px;">
-		</canvas>
-		<canvas id="hidden" style="display: none;" width="900" height="900">
-		</canvas>
-		<canvas id="hourHand" style="display: none;" width="477" height="135">
-		</canvas>
-		<canvas id="minuteHand" style="display: none;" width="585" height="135">
-		</canvas>
-		<canvas id="secondsHand" style="display: none;" width="549" height="126">
-		</canvas>
-	
+	<body>
+		<div id="uhr"></div>
 
-
-<script>
-	
-	// By Roland Rytz
-	
-	var clock = new Clock({
-		hiddenCanvas: 			document.getElementById('hidden'),		// The static clock face is pre-rendered here
-		hourHand:				document.getElementById('hourHand'),	// The hour hand is pre-rendered here
-		minuteHand:				document.getElementById('minuteHand'),	// The minute hand is pre-rendered here
-		secondsHand:			document.getElementById('secondsHand'),	// The seconds hand is pre-rendered here
-		renderCanvas:			document.getElementById('clock'), 		// The visible clock, the hands are rendered here
-		backgroundColour: 		'rgb(240, 240, 240)',					// RGB colour of the clock face
-		foregroundColour: 		'rgb(20, 20, 20)',						// RGB colour of the minute/hour hands and the minute indices
-		secondsColour: 			'rgb(210, 0, 0)',						// RGB colour of the seconds hand
-		fiveMinuteStepWidth:	3.2,									// Width of the larger indices in % of the clock diameter
-		minuteStepWidth: 		1.2,									// Width of the smaller indices in % of the clock diameter
-		stepPadding: 			3,										// Distance of the indices to the face's outer border in % of the clock diameter
-		fiveMinuteStepLength:	11.6,									// Length of the larger indices in % of the clock diameter
-		minuteStepLength: 		4,										// Length of the smaller indices in % of the clock diameter
-		hourHandInnerWidth:		5.5,										// The hour hand trapezoid's side closest to the center in % of the clock diameter
-		hourHandOuterWidth: 	4.5,										// The hour hand trapezoid's side closest to the center in % of the clock diameter
-		hourHandLength: 		43,										// The hour hand's length in % of the clock diameter
-		hourTipToPivot:			75,										// Distance from the outer end of the hour hand to the face's center in % of its length
-		minuteHandInnerWidth:		5,										// The hour hand trapezoid's side closest to the center in % of the clock diameter
-		minuteHandOuterWidth: 	3.5,										// The hour hand trapezoid's side closest to the center in % of the clock diameter
-		minuteHandLength: 		55,										// The hour hand's length in % of the clock diameter
-		minuteTipToPivot:			80,										// Distance from the outer end of the hour hand to the face's center in % of its length
-		secondsHandLength:		51,									// Total length of the seconds hand
-		secondsHandWidth:		1.1,									// Width of the narrow part of the seconds hand
-		secondsHandRadius:		4.7,									// Radius of the circle on the tip of the seconds hand
-		secondsHandPivot:		69,									// Distance from the outer end of the hour hand to the face's center in % of its length
-		minuteGap:			2000,								// How long the seconds hand will stop at a full minute, in milliseconds
-		minuteHandJumpDuration:	350									// How long it takes the minutes hand to jump to the next minute, in milliseconds
-	});
-	
-	function Clock(args){
-		
-		var hiddenCanvas = args.hiddenCanvas;
-		var hourHand = args.hourHand;
-		var minuteHand = args.minuteHand;
-		var secondsHand = args.secondsHand;
-		var renderCanvas = args.renderCanvas;
-		var backgroundColour = args.backgroundColour;
-		var foregroundColour = args.foregroundColour;
-		var secondsColour = args.secondsColour;
-		var fiveMinuteStepWidth = args.fiveMinuteStepWidth;
-		var minuteStepWidth = args.minuteStepWidth;
-		var stepPadding = args.stepPadding;
-		var fiveMinuteStepLength = args.fiveMinuteStepLength;
-		var minuteStepLength = args.minuteStepLength;
-		var hourHandInnerWidth = args.hourHandInnerWidth;
-		var hourHandOuterWidth = args.hourHandOuterWidth;
-		var hourHandLength = args.hourHandLength;
-		var hourTipToPivot = args.hourTipToPivot;
-		var minuteHandInnerWidth = args.minuteHandInnerWidth;
-		var minuteHandOuterWidth = args.minuteHandOuterWidth;
-		var minuteHandLength = args.minuteHandLength;
-		var minuteTipToPivot = args.minuteTipToPivot;
-		var secondsHandLength = args.secondsHandLength;
-		var secondsHandWidth = args.secondsHandWidth;
-		var secondsHandRadius = args.secondsHandRadius;
-		var secondsHandPivot = args.secondsHandPivot;
-		var minuteGap = args.minuteGap;
-		var minuteHandJumpDuration = args.minuteHandJumpDuration;
-
-		var defaultSize = 100; // Use as reference size, then scale everything according to clockDiameter.
-		var clockDiameter = 0;
-
-		var renderCtx = renderCanvas.getContext('2d');
-
-		var handPadding = 10; // To prevent effects from antialiasing causing parts to be cut off
-		
-		var context = hiddenCanvas.getContext('2d');
-		var center = defaultSize / 2;
-		
-	// Scale
-		var scaleFactor = 0;
-
-		scale();
-		//renderAll();
-
-		window.onresize = scale;
-
-	function scale(){
-		if(window.innerWidth > window.innerHeight){
-			clockDiameter = window.innerHeight;
-		} else {
-			clockDiameter = window.innerWidth;
-		}
-		clockDiameter = clockDiameter -20;
-		scaleFactor = clockDiameter/defaultSize;
-		hiddenCanvas.width = clockDiameter;
-		hiddenCanvas.height = clockDiameter;
-
-		renderAll();
-	}
-
-	function renderAll(){
-		context.scale(scaleFactor, scaleFactor);
-		renderClockCircle();
-		renderFiveMinuteSteps();
-		renderMinuteSteps();
-		renderHourHand();
-		renderMinutesHand();
-		renderSecondsHand();
-	}
-		
-	// Render basic circle
-	function renderClockCircle(){
-		context.beginPath();
-		context.arc(center, center, defaultSize/2, 0, 2 * Math.PI, false);
-		context.fillStyle = backgroundColour;
-		context.fill();
-	}
-		
-	// Render five minute steps
-	function renderFiveMinuteSteps(){
-		context.translate(center, center);
-		for(var i = 0; i <= 12; i++){
-			context.save();
-			context.translate(defaultSize/2 - fiveMinuteStepLength/2 - stepPadding, 0);
-			context.fillStyle = foregroundColour;
-			
-			context.fillRect(0-fiveMinuteStepLength/2, 0-fiveMinuteStepWidth/2, fiveMinuteStepLength, fiveMinuteStepWidth);
-			context.restore();
-	  
-			context.rotate(Math.PI / 6);
-		}
-	}
-		
-	// Render minute steps
-	function renderMinuteSteps(){
-		for(var i = 0; i <= 60; i++){
-			if(i%5 != 0){
-				context.save();
-				context.translate(defaultSize/2 - minuteStepLength/2 - stepPadding, 0);
-				context.fillStyle = foregroundColour;
-				
-				context.fillRect(0-minuteStepLength/2, 0-minuteStepWidth/2, minuteStepLength, minuteStepWidth);
-				context.restore();
-			}
-			context.rotate(Math.PI / 30);
-		}
-	}
-		
-	// Render static hour hand
-	function renderHourHand(){
-		
-		hourHand.width = hourHandLength + handPadding;
-		if(hourHandInnerWidth > hourHandOuterWidth){
-			hourHand.height = hourHandInnerWidth + handPadding;
-		} else {
-			hourHand.height = hourHandOuterWidth + handPadding;
-		}
-		var halfhourCanvasHeight = hourHand.height / 2;
-		
-		hourHand.height = hourHand.height * scaleFactor;
-		hourHand.width = hourHand.width * scaleFactor;
-		
-		var hourHandContext = hourHand.getContext('2d');
-		
-		hourHandContext.scale(scaleFactor, scaleFactor);
-		
-		hourHandContext.fillStyle = foregroundColour;
-		hourHandContext.beginPath();
-		hourHandContext.moveTo(
-			handPadding * (1 - hourTipToPivot * 0.01),
-			halfhourCanvasHeight - hourHandInnerWidth/2
-		);
-		hourHandContext.lineTo(
-			hourHandLength + handPadding * (1 - hourTipToPivot * 0.01),
-			halfhourCanvasHeight - hourHandOuterWidth/2
-		);
-		hourHandContext.lineTo(
-			hourHandLength + handPadding * (1 - hourTipToPivot * 0.01),
-			halfhourCanvasHeight + hourHandOuterWidth/2
-		);
-		hourHandContext.lineTo(
-			handPadding * (1 - hourTipToPivot * 0.01),
-			halfhourCanvasHeight + hourHandInnerWidth/2
-		);
-		
-		hourHandContext.closePath();
-		hourHandContext.fill();
-	}
-		
-	// Render static minute hand
-	function renderMinutesHand(){
-		minuteHand.width = minuteHandLength + handPadding;
-		if(minuteHandInnerWidth > minuteHandOuterWidth){
-			minuteHand.height = minuteHandInnerWidth + handPadding;
-		} else {
-			minuteHand.height = minuteHandOuterWidth + handPadding;
-		}
-		var halfminuteCanvasHeight = minuteHand.height / 2;
-		
-		minuteHand.height = minuteHand.height * scaleFactor;
-		minuteHand.width = minuteHand.width * scaleFactor;
-		
-		var minuteHandContext = minuteHand.getContext('2d');
-		
-		minuteHandContext.scale(scaleFactor, scaleFactor);
-		
-		minuteHandContext.fillStyle = foregroundColour;
-		minuteHandContext.beginPath();
-		minuteHandContext.moveTo(
-			handPadding * (1 - minuteTipToPivot * 0.01),
-			halfminuteCanvasHeight - minuteHandInnerWidth/2
-		);
-		minuteHandContext.lineTo(
-			minuteHandLength + handPadding * (1 - minuteTipToPivot * 0.01),
-			halfminuteCanvasHeight - minuteHandOuterWidth/2
-		);
-		minuteHandContext.lineTo(
-			minuteHandLength + handPadding * (1 - minuteTipToPivot * 0.01),
-			halfminuteCanvasHeight + minuteHandOuterWidth/2
-		);
-		minuteHandContext.lineTo(
-			handPadding * (1 - minuteTipToPivot * 0.01),
-			halfminuteCanvasHeight + minuteHandInnerWidth/2
-		);
-		
-		minuteHandContext.closePath();
-		minuteHandContext.fill();
-	}
-		
-	// Render static seconds hand
-	function renderSecondsHand(){
-		
-		secondsHand.width = secondsHandLength + handPadding;
-		secondsHand.height = secondsHandRadius * 2 + handPadding/2;
-		
-		var halfSecondsWidth = secondsHand.height / 2;
-		
-		secondsHand.height = secondsHand.height * scaleFactor;
-		secondsHand.width = secondsHand.width * scaleFactor;
-		
-		var secondsHandContext = secondsHand.getContext('2d');
-		
-		secondsHandContext.scale(scaleFactor, scaleFactor);
-		
-		secondsHandContext.fillStyle = secondsColour;
-		
-		secondsHandContext.fillRect(handPadding * (1 - secondsHandPivot * 0.01), halfSecondsWidth - secondsHandWidth/2, secondsHandLength - secondsHandRadius, secondsHandWidth);
-		
-		secondsHandContext.beginPath();
-		secondsHandContext.arc(secondsHandLength - secondsHandRadius + handPadding * (1 - secondsHandPivot * 0.01), halfSecondsWidth, secondsHandRadius, 0, 2 * Math.PI, false);
-		secondsHandContext.fill();
-
-	}
-		
-	// Display on visible canvas
-		function render(){
-			
-			renderCanvas.width = clockDiameter;
-			renderCanvas.height = clockDiameter;
-			
-			var currentdate = new Date(); 
-			var datetime = "Last Sync: " + currentdate.getDate() + "/"
-			var currentHour = currentdate.getHours();
-			var currentMinute = currentdate.getMinutes();
-			var currentSecond = currentdate.getSeconds();
-			var currentMillisecond = currentSecond*1000 + currentdate.getMilliseconds();
-			currentHour = currentHour*3600 + currentMinute*60 + currentSecond; 
-			
-			
-			renderCtx.drawImage(hiddenCanvas, 0, 0);
-		
-			renderCtx.translate(
-				clockDiameter/2,
-				clockDiameter/2
-			);
-			renderCtx.rotate(270* (Math.PI / 180));
-			
-			var hoursDegree = currentHour/(12*3600) * 360;
-			
-			renderCtx.save();
-			renderCtx.rotate(hoursDegree* (Math.PI / 180));
-			renderCtx.drawImage(hourHand, 0 - hourHand.width + hourHand.width * (hourTipToPivot * 0.01), 0 - hourHand.height / 2);
-			renderCtx.restore();
-			
-			var minutesDegree = currentMinute/60 * 360;
-			if(currentMillisecond < minuteHandJumpDuration){
-				//minutesDegree = minutesDegree - (1/60*360) + (1/60*360)*(currentMillisecond/minuteHandJumpDuration);
-				//minutesDegree = minutesDegree - (1/60*360) + (1/120*360)*2*(1-((1/(0.2*currentMillisecond))*Math.sin(0.07*currentMillisecond)));
-				minutesDegree = minutesDegree - (1/60*360) + (1/60*360)*(1 - ((0-currentMillisecond+minuteHandJumpDuration)/minuteHandJumpDuration)*Math.cos(currentMillisecond*(0.04)));
-			}
-			
-			renderCtx.save();
-			renderCtx.rotate(minutesDegree* (Math.PI / 180));
-			renderCtx.drawImage(minuteHand, 0 - minuteHand.width + minuteHand.width * (minuteTipToPivot * 0.01), 0 - minuteHand.height / 2);
-			renderCtx.restore();
-			
-			var secondsDegree = (currentMillisecond/(60000 - minuteGap)) * 360;
-			if(secondsDegree > 360){
-				secondsDegree = 360;
-			}
-			
-			renderCtx.save();
-			renderCtx.rotate(secondsDegree* (Math.PI / 180));
-			renderCtx.drawImage(secondsHand, 0 - secondsHand.width + secondsHand.width * (secondsHandPivot * 0.01), 0 - secondsHand.height / 2);
-			renderCtx.restore();
-		}
-		
-		// requestAnimFrame, thanks to Paul Irish!
-		// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-		window.requestAnimFrame = (function(){
-		  return  window.requestAnimationFrame       ||
-				window.webkitRequestAnimationFrame ||
-				window.mozRequestAnimationFrame    ||
-				function( callback ){
-				  window.setTimeout(callback, 1000 / 60);
-				};
-		})();
-		
-		(function animationLoop(){
-		  requestAnimFrame(animationLoop);
-		  render();
-		})();
-	}
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</body></html>
+		<script type="text/javascript" src="./bahnhofsuhr.js"></script>
+		<script type="text/javascript">
+			var uhr = new Bahnhofsuhr("uhr");
+			window.onresize = uhr.scale;
+		</script>
+	</body>
+</html>

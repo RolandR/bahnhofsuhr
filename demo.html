@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			Demo
+		</title>
+		<style>
+			#uhr-200px{
+				width: 212px;
+				height: 212px;
+				/*border: 1px #666666 solid;*/
+				/*margin-top: 176px;
+				margin-left: 444px;*/
+				position: absolute;
+				top: 234px;
+				left: 452px;
+			}
+			#big{
+				width: 400px;
+				height: 400px;
+			}
+		</style>	
+	</head>
+	<body>
+		<h1>Bahnhofsuhr Demo</h1>
+		<div id="uhr-200px">
+		</div>
+		<div id="big">
+		</div>
+		<div id="debug">
+		</div>
+
+		<script type="text/javascript" src="./bahnhofsuhr.js"></script>
+		<script type="text/javascript">
+			var uhr = new Bahnhofsuhr("uhr-200px", {debugMode: true});
+			var uhr2 = new Bahnhofsuhr("big", {debugMode: true});
+		</script>
+	</body>
+</html>
