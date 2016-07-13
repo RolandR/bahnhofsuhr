@@ -115,6 +115,18 @@ function Bahnhofsuhr(containerId, args){
 	// Border color
 	var borderColor =			args.borderColor 			=== undefined ? "rgb(150, 150, 150)" : args.borderColor;
 
+	// Border color
+	var showLogo =				args.showLogo 				=== undefined ? false : args.showLogo;
+
+	// Path of Logo file
+	var logoPath =				args.logoPath 				=== undefined ? "./mobatime-logo.svg" : args.logoPath;
+
+	// Logo position from top, in percent of clock diameter
+	var logoTop =				args.logoTop 				=== undefined ? 65 : args.logoTop;
+
+	// Logo width, in percent of clock diameter
+	var logoWidth =				args.logoWidth 				=== undefined ? 20 : args.logoWidth;
+
 
 	var faceCanvas = document.createElement("canvas");
 	var hourHand = document.createElement("canvas");
@@ -135,6 +147,14 @@ function Bahnhofsuhr(containerId, args){
 	//secondsHand.style.imageRendering = "pixelated";
 
 	container.appendChild(faceCanvas);
+
+	if(showLogo){
+		var logo = document.createElement("img");
+		logo.src = logoPath;
+		logo.style.position = "absolute";
+		container.appendChild(logo);
+	}
+
 	container.appendChild(renderCanvas);
 
 	var timeOffset = 0; // is changed when setTime is called
@@ -178,25 +198,36 @@ function Bahnhofsuhr(containerId, args){
 			containerHeight -= parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
 			containerWidth -= parseFloat(computedStyle.paddingLeft) + parseFloat(computedStyle.paddingRight);
 		}
+
+		var marginTop = 0;
+		var marginLeft = 0;
 		
 		if(containerWidth > containerHeight){
 			clockDiameter = containerHeight;
-			faceCanvas.style.marginLeft = (containerWidth - containerHeight)/2 + "px";
-			renderCanvas.style.marginLeft = (containerWidth - containerHeight)/2 + "px";
-			faceCanvas.style.marginTop = "0px";
-			renderCanvas.style.marginTop = "0px";
+			marginLeft = (containerWidth - containerHeight)/2;
+			marginTop = 0;
 		} else {
 			clockDiameter = containerWidth;
-			faceCanvas.style.marginTop = (containerHeight - containerWidth)/2 + "px";
-			renderCanvas.style.marginTop = (containerHeight - containerWidth)/2 + "px";
-			faceCanvas.style.marginLeft = "0px";
-			renderCanvas.style.marginLeft = "0px";
+			marginTop = (containerHeight - containerWidth)/2;
+			marginLeft = 0;
 		}
+
+		faceCanvas.style.marginLeft = marginLeft + "px";
+		renderCanvas.style.marginLeft = marginLeft + "px";
+		faceCanvas.style.marginTop = marginTop + "px";
+		renderCanvas.style.marginTop = marginTop + "px";
 
 		faceCanvas.width = clockDiameter;
 		faceCanvas.height = clockDiameter;
 		renderCanvas.width = clockDiameter;
 		renderCanvas.height = clockDiameter;
+
+		if(showLogo){
+			var width = (logoWidth/100)*clockDiameter;
+			logo.style.width = width +"px";
+			logo.style.marginTop = (marginTop + (logoTop/100)*clockDiameter) +"px";
+			logo.style.marginLeft = marginLeft + clockDiameter/2 - width/2 + "px";
+		}
 
 		if(showBorder){
 			var borderScale = clockDiameter / (clockDiameter*2*(borderWidth/100));
