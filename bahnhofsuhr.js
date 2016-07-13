@@ -132,7 +132,19 @@ function Bahnhofsuhr(containerId, args){
 	var hourHand = document.createElement("canvas");
 	var minuteHand = document.createElement("canvas");
 	var secondsHand = document.createElement("canvas");
-	var renderCanvas = document.createElement("canvas");
+	
+	var renderContainer = document.createElement("div");
+	var hoursRender = document.createElement("canvas");
+	var minutesRender = document.createElement("canvas");
+	var secondsRender = document.createElement("canvas");
+	
+	hoursRender.style.position = "absolute";
+	minutesRender.style.position = "absolute";
+	secondsRender.style.position = "absolute";
+
+	renderContainer.appendChild(hoursRender);
+	renderContainer.appendChild(minutesRender);
+	renderContainer.appendChild(secondsRender);
 
 	if(debugMode){
 		var debug = document.getElementById("debug");
@@ -142,9 +154,7 @@ function Bahnhofsuhr(containerId, args){
 	}
 
 	faceCanvas.style.position = "absolute";
-	renderCanvas.style.position = "absolute";
-	renderCanvas.style.imageRendering = "-webkit-optimize-contrast";
-	//secondsHand.style.imageRendering = "pixelated";
+	renderContainer.style.position = "absolute";
 
 	container.appendChild(faceCanvas);
 
@@ -155,7 +165,7 @@ function Bahnhofsuhr(containerId, args){
 		container.appendChild(logo);
 	}
 
-	container.appendChild(renderCanvas);
+	container.appendChild(renderContainer);
 
 	var timeOffset = 0; // is changed when setTime is called
 
@@ -163,9 +173,16 @@ function Bahnhofsuhr(containerId, args){
 	var center = defaultSize / 2;
 	var clockDiameter = 0;
 
-	var renderCtx = renderCanvas.getContext('2d');
+	var initialRender = true; // If true, all hands will be forced to render. Render resets this to false.
+
+	var hoursCtx = hoursRender.getContext('2d');
+	var minutesCtx = minutesRender.getContext('2d');
+	var secondsCtx = secondsRender.getContext('2d');
 
 	var handPadding = 10; // To prevent effects from antialiasing causing parts to be cut off
+	var previousSecond = -1; // Used so that the hour hand only renders once every second
+
+	var renderBorderWidth;
 	
 	var faceCtx = faceCanvas.getContext('2d');
 	
@@ -180,6 +197,10 @@ function Bahnhofsuhr(containerId, args){
 			window.setTimeout(callback, 1000 / 60);
 		};
 	})();
+
+	window.addEventListener("focus", function(){
+		initialRender = true;
+	});
 
 	scale();
 
@@ -213,14 +234,18 @@ function Bahnhofsuhr(containerId, args){
 		}
 
 		faceCanvas.style.marginLeft = marginLeft + "px";
-		renderCanvas.style.marginLeft = marginLeft + "px";
+		renderContainer.style.marginLeft = marginLeft + "px";
 		faceCanvas.style.marginTop = marginTop + "px";
-		renderCanvas.style.marginTop = marginTop + "px";
+		renderContainer.style.marginTop = marginTop + "px";
 
 		faceCanvas.width = clockDiameter;
 		faceCanvas.height = clockDiameter;
-		renderCanvas.width = clockDiameter;
-		renderCanvas.height = clockDiameter;
+		hoursRender.width = clockDiameter;
+		hoursRender.height = clockDiameter;
+		minutesRender.width = clockDiameter;
+		minutesRender.height = clockDiameter;
+		secondsRender.width = clockDiameter;
+		secondsRender.height = clockDiameter;
 
 		if(showLogo){
 			var width = (logoWidth/100)*clockDiameter;
@@ -232,8 +257,8 @@ function Bahnhofsuhr(containerId, args){
 		if(showBorder){
 			var borderScale = clockDiameter / (clockDiameter*2*(borderWidth/100));
 			clockDiameter -= clockDiameter / borderScale;
-			borderWidth += borderWidth / (borderScale - 1);
-			center = defaultSize/2 + borderWidth;
+			renderBorderWidth = borderWidth + borderWidth / (borderScale - 1);
+			center = defaultSize/2 + renderBorderWidth;
 		}
 
 		scaleFactor = clockDiameter/defaultSize;
@@ -243,9 +268,9 @@ function Bahnhofsuhr(containerId, args){
 			var yOffset = (shadowYOffset / 100) * clockDiameter;
 			var blur = (shadowBlur / 100) * clockDiameter;
 			var shadow = "drop-shadow("+xOffset+"px "+yOffset+"px "+blur+"px "+shadowColor+")";
-			renderCanvas.style.filter = shadow;
-			renderCanvas.style.WebkitFilter = shadow;
-			renderCanvas.style.MozFilter = shadow;
+			renderContainer.style.filter = shadow;
+			renderContainer.style.WebkitFilter = shadow;
+			renderContainer.style.MozFilter = shadow;
 		}
 
 		renderAll();
@@ -262,6 +287,8 @@ function Bahnhofsuhr(containerId, args){
 		renderHourHand();
 		renderMinutesHand();
 		renderSecondsHand();
+
+		initialRender = true;
 
 		if(!running){
 			animationLoop();
@@ -289,13 +316,13 @@ function Bahnhofsuhr(containerId, args){
 			faceCtx.arc(
 				center,
 				center,
-				defaultSize/2 + borderWidth/2,
+				defaultSize/2 + renderBorderWidth/2,
 				0,
 				2 * Math.PI,
 				false
 			);
 			faceCtx.strokeStyle = borderColor;
-			faceCtx.lineWidth = borderWidth;
+			faceCtx.lineWidth = renderBorderWidth;
 			faceCtx.stroke();
 		}
 		
@@ -460,8 +487,6 @@ function Bahnhofsuhr(containerId, args){
 	// Display on visible canvas
 	function render(){
 		
-		renderCtx.clearRect(0, 0, renderCanvas.width, renderCanvas.height);
-		
 		var currentdate = new Date(); 
 		//var currentdate = new Date((currentdate.getTime()-1400000000000)*10000);
 		var currentHour = currentdate.getHours();
@@ -470,52 +495,89 @@ function Bahnhofsuhr(containerId, args){
 		var currentMillisecond = currentSecond*1000 + currentdate.getMilliseconds();
 		currentHour = currentHour*3600 + currentMinute*60 + currentSecond;
 
-		renderCtx.save();
+		if(currentSecond != previousSecond || initialRender){
 
-		renderCtx.translate(
+			hoursCtx.clearRect(0, 0, hoursRender.width, hoursRender.height);
+
+			hoursCtx.save();
+
+			hoursCtx.translate(
+				center*scaleFactor,
+				center*scaleFactor
+			);
+			hoursCtx.rotate(1.5*Math.PI);
+			
+			var hoursDegree = currentHour/(12*3600) * 2*Math.PI;
+			
+			hoursCtx.save();
+			hoursCtx.rotate(hoursDegree);
+			hoursCtx.drawImage(hourHand, 0 - hourHand.width + hourHand.width * (hourTipToPivot * 0.01), 0 - hourHand.height / 2);
+			hoursCtx.restore();
+			
+			hoursCtx.restore();
+
+		}
+
+		previousSecond = currentSecond;
+		
+		if(currentMillisecond < minuteHandJumpDuration || initialRender){
+
+			var minutesDegree = currentMinute/60 * 2*Math.PI;
+
+			if(currentMillisecond < minuteHandJumpDuration){
+				minutesDegree = minutesDegree
+					- (1/60*2*Math.PI)
+					+ (1/60*2*Math.PI)
+					*(
+						1 - (
+							(0-currentMillisecond+minuteHandJumpDuration)
+							/minuteHandJumpDuration
+						)
+						*Math.cos(currentMillisecond*(0.04))
+				);
+			}
+
+			minutesCtx.clearRect(0, 0, minutesRender.width, minutesRender.height);
+
+			minutesCtx.save();
+
+			minutesCtx.translate(
+				center*scaleFactor,
+				center*scaleFactor
+			);
+			minutesCtx.rotate(1.5*Math.PI);
+
+			minutesCtx.save();
+			minutesCtx.rotate(minutesDegree);
+			minutesCtx.drawImage(minuteHand, 0 - minuteHand.width + minuteHand.width * (minuteTipToPivot * 0.01), 0 - minuteHand.height / 2);
+			minutesCtx.restore();
+			
+			minutesCtx.restore();
+		}
+
+		secondsCtx.clearRect(0, 0, secondsRender.width, secondsRender.height);
+
+		secondsCtx.save();
+
+		secondsCtx.translate(
 			center*scaleFactor,
 			center*scaleFactor
 		);
-		renderCtx.rotate(1.5*Math.PI);
-		
-		var hoursDegree = currentHour/(12*3600) * 2*Math.PI;
-		
-		renderCtx.save();
-		renderCtx.rotate(hoursDegree);
-		renderCtx.drawImage(hourHand, 0 - hourHand.width + hourHand.width * (hourTipToPivot * 0.01), 0 - hourHand.height / 2);
-		renderCtx.restore();
-		
-		var minutesDegree = currentMinute/60 * 2*Math.PI;
-		
-		if(currentMillisecond < minuteHandJumpDuration){
-			minutesDegree = minutesDegree
-				- (1/60*2*Math.PI)
-				+ (1/60*2*Math.PI)
-				*(
-					1 - (
-						(0-currentMillisecond+minuteHandJumpDuration)
-						/minuteHandJumpDuration
-					)
-					*Math.cos(currentMillisecond*(0.04))
-				);
-		}
-		
-		renderCtx.save();
-		renderCtx.rotate(minutesDegree);
-		renderCtx.drawImage(minuteHand, 0 - minuteHand.width + minuteHand.width * (minuteTipToPivot * 0.01), 0 - minuteHand.height / 2);
-		renderCtx.restore();
+		secondsCtx.rotate(1.5*Math.PI);
 		
 		var secondsDegree = (currentMillisecond/(60000 - minuteGap)) * 2 * Math.PI;
 		if(secondsDegree > 2*Math.PI){
 			secondsDegree = 2*Math.PI;
 		}
 		
-		renderCtx.save();
-		renderCtx.rotate(secondsDegree);
-		renderCtx.drawImage(secondsHand, 0 - secondsHand.width + secondsHand.width * (secondsHandPivot * 0.01), 0 - secondsHand.height / 2);
-		renderCtx.restore();
+		secondsCtx.save();
+		secondsCtx.rotate(secondsDegree);
+		secondsCtx.drawImage(secondsHand, 0 - secondsHand.width + secondsHand.width * (secondsHandPivot * 0.01), 0 - secondsHand.height / 2);
+		secondsCtx.restore();
 		
-		renderCtx.restore();
+		secondsCtx.restore();
+
+		initialRender = false;
 	}
 	
 	function animationLoop(){
