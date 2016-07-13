@@ -115,7 +115,7 @@ function Bahnhofsuhr(containerId, args){
 	// Border color
 	var borderColor =			args.borderColor 			=== undefined ? "rgb(150, 150, 150)" : args.borderColor;
 
-	// Border color
+	// Show Logo (or any image) on the clock face
 	var showLogo =				args.showLogo 				=== undefined ? false : args.showLogo;
 
 	// Path of Logo file
@@ -127,16 +127,23 @@ function Bahnhofsuhr(containerId, args){
 	// Logo width, in percent of clock diameter
 	var logoWidth =				args.logoWidth 				=== undefined ? 20 : args.logoWidth;
 
+	// Allow clock to be displayed in fullscreen
+	var fullscreenable =		args.fullscreenable 		=== undefined ? false : args.fullscreenable;
+
+	// Background color when fullscreen
+	var fullscreenBackground =	args.fullscreenBackground 	=== undefined ? "#FFFFFF" : args.fullscreenBackground;
+
 
 	var faceCanvas = document.createElement("canvas");
 	var hourHand = document.createElement("canvas");
 	var minuteHand = document.createElement("canvas");
 	var secondsHand = document.createElement("canvas");
-	
-	var renderContainer = document.createElement("div");
 	var hoursRender = document.createElement("canvas");
 	var minutesRender = document.createElement("canvas");
 	var secondsRender = document.createElement("canvas");
+
+	var innerContainer = document.createElement("div");
+	var renderContainer = document.createElement("div");
 	
 	hoursRender.style.position = "absolute";
 	minutesRender.style.position = "absolute";
@@ -156,16 +163,18 @@ function Bahnhofsuhr(containerId, args){
 	faceCanvas.style.position = "absolute";
 	renderContainer.style.position = "absolute";
 
-	container.appendChild(faceCanvas);
+	innerContainer.appendChild(faceCanvas);
 
+	var logo = document.createElement("img");
 	if(showLogo){
-		var logo = document.createElement("img");
 		logo.src = logoPath;
 		logo.style.position = "absolute";
-		container.appendChild(logo);
+		innerContainer.appendChild(logo);
 	}
 
-	container.appendChild(renderContainer);
+	innerContainer.appendChild(renderContainer);
+
+	container.appendChild(innerContainer);
 
 	var timeOffset = 0; // is changed when setTime is called
 
@@ -202,6 +211,78 @@ function Bahnhofsuhr(containerId, args){
 		initialRender = true;
 	});
 
+	var fullscreen = false;
+	var defaultContainerPosition = container.style.position || "static";
+	var defaultWidth = container.style.width;
+	var defaultHeight = container.style.height;
+	var defaultBackground = container.style.backgroundColor;
+	var defaultPaddingTop = container.style.paddingTop || "0px";
+	var defaultPaddingLeft = container.style.paddingLeft || "0px";
+	var defaultPaddingRight = container.style.paddingRight || "0px";
+	var defaultPaddingBottom = container.style.paddingBottom || "0px";
+
+	if(fullscreenable){
+		container.style.cursor = "pointer";
+		
+		container.addEventListener("click", function(){
+			if(!fullscreen){
+				goFullscreen();
+			} else {
+				leaveFullscreen();
+			}
+		});
+
+		window.addEventListener("keydown", function(e){
+			if(e.code == "Escape"){
+				leaveFullscreen();
+			}
+		});
+
+		window.addEventListener("resize", function(e){
+			if(fullscreen){
+				scale();
+			}
+		});
+
+		var goFullscreen = function(){
+
+			innerContainer.style.transitionProperty = "margin-left";
+			innerContainer.style.transitionDuration = "300ms";
+			innerContainer.style.transitionFunction = "ease-out";
+			
+			container.style.top = "0px";
+			container.style.left = "0px";
+			container.style.right = "0px";
+			container.style.bottom = "0px";
+			container.style.width = "auto";
+			container.style.height = "auto";
+			container.style.paddingTop = "10px";
+			container.style.paddingLeft = "10px";
+			container.style.paddingRight = "10px";
+			container.style.paddingBottom = "10px";
+			container.style.backgroundColor = fullscreenBackground;
+			container.style.position = "absolute";
+			fullscreen = true;
+			scale();
+		}
+
+		var leaveFullscreen = function(){
+			innerContainer.style.transitionProperty = "none";
+			innerContainer.style.transitionDuration = "0ms";
+			
+			container.style.position = defaultContainerPosition;
+			container.style.width = defaultWidth;
+			container.style.height = defaultHeight;
+			container.style.backgroundColor = defaultBackground;
+			container.style.paddingTop = defaultPaddingTop;
+			container.style.paddingLeft = defaultPaddingLeft;
+			container.style.paddingRight = defaultPaddingRight;
+			container.style.paddingBottom = defaultPaddingBottom;
+			fullscreen = false;
+			scale();
+		}
+	}
+
 	scale();
 
 	/* Set time to be displayed, in milliseconds since January 1, 1970, 00:00:00 UTC */
@@ -235,10 +316,8 @@ function Bahnhofsuhr(containerId, args){
 			marginLeft = 0;
 		}
 
-		faceCanvas.style.marginLeft = marginLeft + "px";
-		renderContainer.style.marginLeft = marginLeft + "px";
-		faceCanvas.style.marginTop = marginTop + "px";
-		renderContainer.style.marginTop = marginTop + "px";
+		innerContainer.style.marginLeft = marginLeft + "px";
+		innerContainer.style.marginTop = marginTop + "px";
 
 		faceCanvas.width = clockDiameter;
 		faceCanvas.height = clockDiameter;
@@ -252,8 +331,8 @@ function Bahnhofsuhr(containerId, args){
 		if(showLogo){
 			var width = (logoWidth/100)*clockDiameter;
 			logo.style.width = width +"px";
-			logo.style.marginTop = (marginTop + (logoTop/100)*clockDiameter) +"px";
-			logo.style.marginLeft = marginLeft + clockDiameter/2 - width/2 + "px";
+			logo.style.marginTop = ((logoTop/100)*clockDiameter) + "px";
+			logo.style.marginLeft = (clockDiameter/2 - width/2) + "px";
 		}
 
 		if(showBorder){
