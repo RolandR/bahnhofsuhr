@@ -6,8 +6,17 @@
 			Demo
 		</title>
 		<style>
+			*{
+				box-sizing: border-box;
+				margin: 0px;
+				padding: 0px;
+			}
 			body{
 				font-family: sans-serif;
+				padding: 20px;
+			}
+			h1{
+				margin: 0px 0px 20px 0px;
 			}
 			div{
 				/*outline: 1px #AAAAAA solid;*/
@@ -23,6 +32,15 @@
 				width: 400px;
 				height: 400px;
 			}
+			input{
+				width: 100px;
+			}
+			input, button{
+				height: 30px;
+				padding: 3px 5px;
+				font-size: 16px;
+				display: inline-block;
+			}
 		</style>	
 	</head>
 	<body>
@@ -35,10 +53,56 @@
 		<div id="debug">
 		</div>
 
+		<input type="text" id="setTimeInput" value="10:00:00" /> <button id="setTimeButton">Set Time</button>
+
 		<script type="text/javascript" src="./bahnhofsuhr.js"></script>
 		<script type="text/javascript">
 			var uhr = new Bahnhofsuhr("uhr-200px", {debugMode: true});
 			var uhr2 = new Bahnhofsuhr("big", {debugMode: true, showBorder: true, showLogo: true});
+
+			var setTimeInput = document.getElementById("setTimeInput");
+			var setTimeButton = document.getElementById("setTimeButton");
+
+			setTimeInput.oninput = function(e){
+				if(isNaN(Date.parse("2016-01-01 "+setTimeInput.value))){
+					setTimeButton.disabled = true;
+				} else {
+					setTimeButton.disabled = false;
+				}
+			}
+
+			setTimeButton.onclick = function(){
+				var date = Date.parse("2016-01-01 "+setTimeInput.value);
+				if(!isNaN(date)){
+					uhr.setTime(date);
+					uhr2.setTime(date);
+				}
+			}
+			
 		</script>
 	</body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
