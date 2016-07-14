@@ -54,7 +54,7 @@
 		<div id="debug">
 		</div>
 
-		<input type="text" id="setTimeInput" value="10:00:00" /> <button id="setTimeButton">Set Time</button>
+		<input type="text" id="setTimeInput" value="10:10:00" /> <button id="setTimeButton">Set Time</button>
 
 		<script type="text/javascript" src="./bahnhofsuhr.js"></script>
 		<script type="text/javascript">
@@ -65,7 +65,8 @@
 			var setTimeButton = document.getElementById("setTimeButton");
 
 			setTimeInput.oninput = function(e){
-				if(isNaN(Date.parse("2016-01-01 "+setTimeInput.value))){
+				
+				if(!checkDate(setTimeInput.value)){
 					setTimeButton.disabled = true;
 				} else {
 					setTimeButton.disabled = false;
@@ -79,10 +80,43 @@
 			}
 
 			setTimeButton.onclick = function(){
-				var date = Date.parse("2016-01-01 "+setTimeInput.value);
-				if(!isNaN(date)){
+				
+				var date = checkDate(setTimeInput.value);
+
+				if(date){
 					uhr.setTime(date);
 					uhr2.setTime(date);
+				}
+			}
+
+			function checkDate(dateString){
+				var date = new Date();
+				var time = dateString.split(":");
+				
+				date.setHours(time[0]*1);
+				
+				if(time[1]){
+					date.setMinutes(time[1]*1);
+				} else {
+					date.setMinutes(0);
+				}
+				
+				if(time[2]){
+					date.setSeconds(time[2]*1);
+				} else {
+					date.setSeconds(0);
+				}
+
+				if(time[3]){
+					date.setMilliseconds(time[3]*1);
+				} else {
+					date.setMilliseconds(0);
+				}
+				
+				if(!isNaN(date)){
+					return date;
+				} else {
+					return false;
 				}
 			}
 			
