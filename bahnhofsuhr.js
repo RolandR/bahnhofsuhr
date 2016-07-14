@@ -601,7 +601,7 @@ function Bahnhofsuhr(containerId, args){
 
 		previousSecond = currentSecond;
 		
-		if(currentMillisecond < minuteHandJumpDuration || initialRender){
+		if(currentMillisecond < minuteHandJumpDuration*2 || initialRender){
 
 			var minutesDegree = currentMinute/60 * 2*Math.PI;
 
