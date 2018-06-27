@@ -32,61 +32,61 @@ function Bahnhofsuhr(containerId, args){
 	var secondsColor = 		args.secondsColor 			=== undefined ? 'rgb(223, 62, 89)' : args.secondsColor;
 	
 	// Width of the larger indices in % of the clock diameter
-	var fiveMinuteStepWidth = 	args.fiveMinuteStepWidth 	=== undefined ? 3.25 : args.fiveMinuteStepWidth;
+	var fiveMinuteStepWidth = 	args.fiveMinuteStepWidth 	=== undefined ? 3.5 : args.fiveMinuteStepWidth;
 	
 	// Width of the smaller indices in % of the clock diameter
-	var minuteStepWidth = 		args.minuteStepWidth 		=== undefined ? 1.3 : args.minuteStepWidth;
+	var minuteStepWidth = 		args.minuteStepWidth 		=== undefined ? 1.4 : args.minuteStepWidth;
 	
 	// Distance of the indices to the face's outer border in % of the clock diameter
-	var stepPadding = 			args.stepPadding 			=== undefined ? 2.8 : args.stepPadding;
+	var stepPadding = 			args.stepPadding 			=== undefined ? 1.5 : args.stepPadding;
 	
 	// Length of the larger indices in % of the clock diameter
-	var fiveMinuteStepLength = 	args.fiveMinuteStepLength 	=== undefined ? 11.6 : args.fiveMinuteStepLength;
+	var fiveMinuteStepLength = 	args.fiveMinuteStepLength 	=== undefined ? 12 : args.fiveMinuteStepLength;
 	
 	// Length of the smaller indices in % of the clock diameter
-	var minuteStepLength = 		args.minuteStepLength 		=== undefined ? 3.2 : args.minuteStepLength;
+	var minuteStepLength = 		args.minuteStepLength 		=== undefined ? 3.5 : args.minuteStepLength;
 	
 	// The hour hand trapezoid's side closest to the center in % of the clock diameter
-	var hourHandInnerWidth = 	args.hourHandInnerWidth 	=== undefined ? 6.2 : args.hourHandInnerWidth;
+	var hourHandInnerWidth = 	args.hourHandInnerWidth 	=== undefined ? 6.4 : args.hourHandInnerWidth;
 	
 	// The hour hand trapezoid's far side from the center in % of the clock diameter
-	var hourHandOuterWidth = 	args.hourHandOuterWidth 	=== undefined ? 5.1 : args.hourHandOuterWidth;
+	var hourHandOuterWidth = 	args.hourHandOuterWidth 	=== undefined ? 5.2 : args.hourHandOuterWidth;
 	
 	// The hour hand's length in % of the clock diameter
-	var hourHandLength = 		args.hourHandLength 		=== undefined ? 43 : args.hourHandLength;
+	var hourHandLength = 		args.hourHandLength 		=== undefined ? 44 : args.hourHandLength;
 	
-	// Distance from the outer end of the hour hand to the face's center in % of its length
-	var hourTipToPivot = 		args.hourTipToPivot 		=== undefined ? 73 : args.hourTipToPivot;
+	// Distance from the inner end of the hour hand to the face's center
+	var hourHandPivot = 		args.hourHandPivot 			=== undefined ? 12 : args.hourHandPivot;
 	
 	// The minute hand trapezoid's side closest to the center in % of the clock diameter
-	var minuteHandInnerWidth = 	args.minuteHandInnerWidth 	=== undefined ? 5 : args.minuteHandInnerWidth;
+	var minuteHandInnerWidth = 	args.minuteHandInnerWidth 	=== undefined ? 5.2 : args.minuteHandInnerWidth;
 	
 	// The minute hand trapezoid's far side from the center in % of the clock diameter
-	var minuteHandOuterWidth = 	args.minuteHandOuterWidth 	=== undefined ? 3.5 : args.minuteHandOuterWidth;
+	var minuteHandOuterWidth = 	args.minuteHandOuterWidth 	=== undefined ? 3.6 : args.minuteHandOuterWidth;
 	
 	// Distance from the outer end of the minute hand to the face's center in % of its length
-	var minuteHandLength = 		args.minuteHandLength 		=== undefined ? 56.5 : args.minuteHandLength;
+	var minuteHandLength = 		args.minuteHandLength 		=== undefined ? 58 : args.minuteHandLength;
 	
-	// Distance from the outer end of the minute hand to the face's center in % of its length
-	var minuteTipToPivot = 		args.minuteTipToPivot 		=== undefined ? 79 : args.minuteTipToPivot;
+	// Distance from the inner end of the minute hand to the face's center
+	var minuteHandPivot = 		args.minuteHandPivot 		=== undefined ? 12 : args.minuteHandPivot;
 	
 	// Total length of the seconds hand
-	var secondsHandLength = 	args.secondsHandLength 		=== undefined ? 51 : args.secondsHandLength;
+	var secondsHandLength = 	args.secondsHandLength 		=== undefined ? 53 : args.secondsHandLength;
 	
 	// Width of the narrow part of the seconds hand
 	var secondsHandWidth = 		args.secondsHandWidth 		=== undefined ? 1.4 : args.secondsHandWidth;
 	
 	// Radius of the circle on the tip of the seconds hand
-	var secondsHandRadius = 	args.secondsHandRadius 		=== undefined ? 5.2 : args.secondsHandRadius;
+	var secondsHandRadius = 	args.secondsHandRadius 		=== undefined ? 5.25 : args.secondsHandRadius;
 	
-	// Distance from the outer end of the seconds hand to the face's center in % of its length
-	var secondsHandPivot = 		args.secondsHandPivot 		=== undefined ? 69 : args.secondsHandPivot;
+	// Distance from the shorter end of the seconds hand to the face's center
+	var secondsHandPivot = 		args.secondsHandPivot 		=== undefined ? 16.5 : args.secondsHandPivot;
 	
 	// How long the seconds hand will stop at a full minute, in milliseconds
 	var minuteGap = 			args.minuteGap 				=== undefined ? 2000 : args.minuteGap;
 	
 	// How long it takes the minutes hand to jump to the next minute, in milliseconds
-	var minuteHandJumpDuration =args.minuteHandJumpDuration === undefined ? 350 : args.minuteHandJumpDuration;
+	var minuteHandJumpDuration =args.minuteHandJumpDuration === undefined ? 5000 : args.minuteHandJumpDuration;
 
 	// Show shadows from hands, true or false
 	var showShadow =			args.showShadow 			=== undefined ? true : args.showShadow;
@@ -110,7 +110,7 @@ function Bahnhofsuhr(containerId, args){
 	var showBorder =			args.showBorder 			=== undefined ? false : args.showBorder;
 
 	// Border width, in percent of clock diameter
-	var borderWidth =			args.borderWidth 			=== undefined ? 2 : args.borderWidth;
+	var borderWidth =			args.borderWidth 			=== undefined ? 2.5 : args.borderWidth;
 
 	// Border color
 	var borderColor =			args.borderColor 			=== undefined ? "rgb(150, 150, 150)" : args.borderColor;
@@ -135,33 +135,14 @@ function Bahnhofsuhr(containerId, args){
 
 
 	var faceCanvas = document.createElement("canvas");
-	var hourHand = document.createElement("canvas");
-	var minuteHand = document.createElement("canvas");
-	var secondsHand = document.createElement("canvas");
-	var hoursRender = document.createElement("canvas");
-	var minutesRender = document.createElement("canvas");
-	var secondsRender = document.createElement("canvas");
+	var handsCanvas = document.createElement("canvas");
+	//handsCanvas.style.willChange = "transform";
 
 	var innerContainer = document.createElement("div");
-	var renderContainer = document.createElement("div");
+	//innerContainer.style.willChange = "transform";
 	
-	hoursRender.style.position = "absolute";
-	minutesRender.style.position = "absolute";
-	secondsRender.style.position = "absolute";
-
-	renderContainer.appendChild(hoursRender);
-	renderContainer.appendChild(minutesRender);
-	renderContainer.appendChild(secondsRender);
-
-	if(debugMode){
-		var debug = document.getElementById("debug");
-		debug.appendChild(hourHand);
-		debug.appendChild(minuteHand);
-		debug.appendChild(secondsHand);
-	}
-
+	handsCanvas.style.position = "absolute";
 	faceCanvas.style.position = "absolute";
-	renderContainer.style.position = "absolute";
 
 	innerContainer.appendChild(faceCanvas);
 
@@ -172,8 +153,7 @@ function Bahnhofsuhr(containerId, args){
 		innerContainer.appendChild(logo);
 	}
 
-	innerContainer.appendChild(renderContainer);
-
+	innerContainer.appendChild(handsCanvas);
 	container.appendChild(innerContainer);
 
 	var timeOffset = 0; // is changed when setTime is called
@@ -182,34 +162,13 @@ function Bahnhofsuhr(containerId, args){
 	var center = defaultSize / 2;
 	var clockDiameter = 0;
 
-	var initialRender = true; // If true, all hands will be forced to render. Render resets this to false.
-
-	var hoursCtx = hoursRender.getContext('2d');
-	var minutesCtx = minutesRender.getContext('2d');
-	var secondsCtx = secondsRender.getContext('2d');
-
-	var handPadding = 10; // To prevent effects from antialiasing causing parts to be cut off
-	var previousSecond = -1; // Used so that the hour hand only renders once every second
-
 	var renderBorderWidth;
 	
+	var handsCtx = handsCanvas.getContext('2d');
 	var faceCtx = faceCanvas.getContext('2d');
 	
 	// Scale
 	var scaleFactor = 0;
-
-	var running = false;
-	
-	var requestAnimFrame = (function(){
-		return  window.requestAnimationFrame ||
-		function( callback ){
-			window.setTimeout(callback, 1000 / 60);
-		};
-	})();
-
-	window.addEventListener("focus", function(){
-		initialRender = true;
-	});
 
 	var fullscreen = false;
 	var defaultContainerPosition = container.style.position || "static";
@@ -282,14 +241,15 @@ function Bahnhofsuhr(containerId, args){
 			scale();
 		}
 	}
-
+	
+	setTime(1530106317561);
 	scale();
+	animationLoop();
 
 	/* Set time to be displayed, in milliseconds since January 1, 1970, 00:00:00 UTC */
 	function setTime(newTime){
 		var currentTime = Date.now();
 		timeOffset = newTime - currentTime;
-		initialRender = true;
 	}
 
 	function scale(){
@@ -318,15 +278,14 @@ function Bahnhofsuhr(containerId, args){
 
 		innerContainer.style.marginLeft = marginLeft + "px";
 		innerContainer.style.marginTop = marginTop + "px";
+		
+		innerContainer.style.width = (containerWidth - 2*marginLeft) + "px";
+		innerContainer.style.height = (containerHeight - 2*marginTop) + "px";
 
 		faceCanvas.width = clockDiameter;
 		faceCanvas.height = clockDiameter;
-		hoursRender.width = clockDiameter;
-		hoursRender.height = clockDiameter;
-		minutesRender.width = clockDiameter;
-		minutesRender.height = clockDiameter;
-		secondsRender.width = clockDiameter;
-		secondsRender.height = clockDiameter;
+		handsCanvas.width = clockDiameter;
+		handsCanvas.height = clockDiameter;
 
 		if(showLogo){
 			var width = (logoWidth/100)*clockDiameter;
@@ -349,15 +308,15 @@ function Bahnhofsuhr(containerId, args){
 			var yOffset = (shadowYOffset / 100) * clockDiameter;
 			var blur = (shadowBlur / 100) * clockDiameter;
 			var shadow = "drop-shadow("+xOffset+"px "+yOffset+"px "+blur+"px "+shadowColor+")";
-			renderContainer.style.filter = shadow;
-			renderContainer.style.WebkitFilter = shadow;
-			renderContainer.style.MozFilter = shadow;
+			handsCanvas.style.filter = shadow;
+			handsCanvas.style.WebkitFilter = shadow;
+			handsCanvas.style.MozFilter = shadow;
 		}
 
-		renderAll();
+		renderClockFace();
 	}
 
-	function renderAll(){
+	function renderClockFace(){
 		faceCtx.fillStyle = foregroundColor;
 		faceCtx.scale(scaleFactor, scaleFactor);
 		faceCtx.save();
@@ -365,16 +324,6 @@ function Bahnhofsuhr(containerId, args){
 		renderClockCircle();
 		renderFiveMinuteSteps();
 		renderMinuteSteps();
-		renderHourHand();
-		renderMinutesHand();
-		renderSecondsHand();
-
-		initialRender = true;
-
-		if(!running){
-			animationLoop();
-			running = true;
-		}
 	}
 		
 	// Render basic circle
@@ -458,151 +407,69 @@ function Bahnhofsuhr(containerId, args){
 		}
 	}
 		
-	// Render static hour hand
-	function renderHourHand(){
-		
-		hourHand.width = Math.ceil(((hourHandLength + handPadding)*scaleFactor)/2)*2;
-		if(hourHandInnerWidth > hourHandOuterWidth){
-			hourHand.height = Math.ceil(((hourHandInnerWidth + handPadding)*scaleFactor)/2)*2;
-		} else {
-			hourHand.height = Math.ceil(((hourHandOuterWidth + handPadding)*scaleFactor)/2)*2;
-		}
-		var halfHourCanvasHeight = hourHand.height / 2;
-		
-		var hourHandContext = hourHand.getContext('2d');
-
-		var paddingOffset = handPadding * (1 - hourTipToPivot * 0.01);
-		
-		hourHandContext.fillStyle = foregroundColor;
-		hourHandContext.beginPath();
-		hourHandContext.moveTo(
-			Math.round(paddingOffset*scaleFactor),
-			halfHourCanvasHeight - (hourHandInnerWidth/2)*scaleFactor
-		);
-		hourHandContext.lineTo(
-			Math.round((hourHandLength + paddingOffset)*scaleFactor),
-			halfHourCanvasHeight - (hourHandOuterWidth/2)*scaleFactor
-		);
-		hourHandContext.lineTo(
-			Math.round((hourHandLength + paddingOffset)*scaleFactor),
-			halfHourCanvasHeight + (hourHandOuterWidth/2)*scaleFactor
-		);
-		hourHandContext.lineTo(
-			Math.round(paddingOffset*scaleFactor),
-			halfHourCanvasHeight + (hourHandInnerWidth/2)*scaleFactor
-		);
-		
-		hourHandContext.closePath();
-		hourHandContext.fill();
-	}
-		
-	// Render static minute hand
-	function renderMinutesHand(){
-		
-		minuteHand.width = Math.ceil(((minuteHandLength + handPadding)*scaleFactor)/2)*2;
-		if(minuteHandInnerWidth > minuteHandOuterWidth){
-			minuteHand.height = Math.ceil(((minuteHandInnerWidth + handPadding)*scaleFactor)/2)*2;
-		} else {
-			minuteHand.height = Math.ceil(((minuteHandOuterWidth + handPadding)*scaleFactor)/2)*2;
-		}
-		var halfMinuteCanvasHeight = minuteHand.height / 2;
-		
-		var minuteHandContext = minuteHand.getContext('2d');
-
-		var paddingOffset = handPadding * (1 - minuteTipToPivot * 0.01);
-		
-		minuteHandContext.fillStyle = foregroundColor;
-		minuteHandContext.beginPath();
-		minuteHandContext.moveTo(
-			Math.floor(paddingOffset*scaleFactor),
-			halfMinuteCanvasHeight - (minuteHandInnerWidth/2)*scaleFactor
-		);
-		minuteHandContext.lineTo(
-			Math.floor((minuteHandLength + paddingOffset)*scaleFactor),
-			halfMinuteCanvasHeight - (minuteHandOuterWidth/2)*scaleFactor
-		);
-		minuteHandContext.lineTo(
-			Math.floor((minuteHandLength + paddingOffset)*scaleFactor),
-			halfMinuteCanvasHeight + (minuteHandOuterWidth/2)*scaleFactor
-		);
-		minuteHandContext.lineTo(
-			Math.floor(paddingOffset*scaleFactor),
-			halfMinuteCanvasHeight + (minuteHandInnerWidth/2)*scaleFactor
-		);
-		
-		minuteHandContext.closePath();
-		minuteHandContext.fill();
-	}
-		
-	// Render static seconds hand
-	function renderSecondsHand(){
-		
-		secondsHand.width = Math.ceil((secondsHandLength + handPadding)*scaleFactor/2)*2;
-		secondsHand.height = Math.ceil((secondsHandRadius*2 + handPadding/2)*scaleFactor/2)*2;
-		
-		var halfSecondsCanvasWidth = secondsHand.height / 2;
-		
-		var secondsHandContext = secondsHand.getContext('2d');
-		secondsHandContext.fillStyle = secondsColor;
-		
-		secondsHandContext.fillRect(
-			Math.floor((handPadding * (1 - secondsHandPivot * 0.01))*scaleFactor),
-			Math.floor(halfSecondsCanvasWidth - (secondsHandWidth/2)*scaleFactor),
-			Math.round((secondsHandLength - secondsHandRadius)*scaleFactor),
-			Math.round((secondsHandWidth)*scaleFactor)
-		);
-		
-		secondsHandContext.beginPath();
-		secondsHandContext.arc(
-			Math.floor((secondsHandLength - secondsHandRadius + handPadding * (1 - secondsHandPivot * 0.01))*scaleFactor),
-			halfSecondsCanvasWidth,
-			(secondsHandRadius)*scaleFactor,
-			0,
-			2 * Math.PI,
-			false
-		);
-		secondsHandContext.fill();
-
-	}
-		
 	// Display on visible canvas
 	function render(){
 		
 		var currentdate = new Date(Date.now() + timeOffset); 
-		//var currentdate = new Date((currentdate.getTime()-1400000000000)*10000);
-		var currentHour = currentdate.getHours();
 		var currentMinute = currentdate.getMinutes();
 		var currentSecond = currentdate.getSeconds();
-		var currentMillisecond = currentSecond*1000 + currentdate.getMilliseconds();
-		currentHour = currentHour*3600 + currentMinute*60 + currentSecond;
-
-		if(currentSecond != previousSecond || initialRender){
-
-			hoursCtx.clearRect(0, 0, hoursRender.width, hoursRender.height);
-
-			hoursCtx.save();
-
-			hoursCtx.translate(
-				center*scaleFactor,
-				center*scaleFactor
-			);
-			hoursCtx.rotate(1.5*Math.PI);
-			
-			var hoursDegree = currentHour/(12*3600) * 2*Math.PI;
-			
-			hoursCtx.save();
-			hoursCtx.rotate(hoursDegree);
-			hoursCtx.drawImage(hourHand, 0 - hourHand.width + hourHand.width * (hourTipToPivot * 0.01), 0 - hourHand.height / 2);
-			hoursCtx.restore();
-			
-			hoursCtx.restore();
-
-		}
-
-		previousSecond = currentSecond;
+		var currentMillisecond = currentSecond*1000 + currentdate.getMilliseconds() + (performance.now()%1);
+		var currentHour = currentdate.getHours()*3600 + currentMinute*60 + currentSecond;
 		
-		if(currentMillisecond < minuteHandJumpDuration*2 || initialRender){
-
+		handsCtx.clearRect(0, 0, handsCanvas.width, handsCanvas.height);
+		
+		handsCtx.save();
+		handsCtx.scale(scaleFactor, scaleFactor);
+		handsCtx.translate(center, center);
+		
+		handsCtx.lineWidth = 1/scaleFactor;
+		
+		renderHourHand();
+		renderMinutesHand();
+		renderSecondsHand();
+		
+		handsCtx.restore();
+		
+		function renderSecondsHand(){
+			handsCtx.save();
+		
+			var secondsDegree = (currentMillisecond/(60000 - minuteGap)) * 2 * Math.PI;
+			if(secondsDegree > 2*Math.PI){
+				secondsDegree = 2*Math.PI;
+			}
+			
+			handsCtx.rotate(secondsDegree + 1.5*Math.PI);
+		
+			handsCtx.fillStyle = secondsColor;
+			
+			handsCtx.beginPath();
+			
+			handsCtx.rect(
+				-secondsHandPivot,
+				-secondsHandWidth/2,
+				 secondsHandLength-secondsHandRadius,
+				 secondsHandWidth
+			);
+			
+			handsCtx.moveTo(
+				secondsHandLength - secondsHandPivot,
+				0
+			);
+			handsCtx.arc(
+				secondsHandLength - secondsHandRadius - secondsHandPivot,
+				0,
+				secondsHandRadius,
+				0,
+				2 * Math.PI,
+				false
+			);
+			handsCtx.fill();
+			handsCtx.restore();
+		}
+		
+		function renderMinutesHand(){
+			handsCtx.save();
+			
 			var minutesDegree = currentMinute/60 * 2*Math.PI;
 
 			if(currentMillisecond < minuteHandJumpDuration){
@@ -610,60 +477,78 @@ function Bahnhofsuhr(containerId, args){
 					- (1/60*2*Math.PI)
 					+ (1/60*2*Math.PI)
 					*(
-						1 - (
+						1 - Math.pow(
 							(0-currentMillisecond+minuteHandJumpDuration)
 							/minuteHandJumpDuration
-						)
-						*Math.cos(currentMillisecond*(0.04))
+						, 20)
+						*Math.cos(currentMillisecond*(0.03))
 				);
 			}
-
-			minutesCtx.clearRect(0, 0, minutesRender.width, minutesRender.height);
-
-			minutesCtx.save();
-
-			minutesCtx.translate(
-				center*scaleFactor,
-				center*scaleFactor
-			);
-			minutesCtx.rotate(1.5*Math.PI);
-
-			minutesCtx.save();
-			minutesCtx.rotate(minutesDegree);
-			minutesCtx.drawImage(minuteHand, 0 - minuteHand.width + minuteHand.width * (minuteTipToPivot * 0.01), 0 - minuteHand.height / 2);
-			minutesCtx.restore();
 			
-			minutesCtx.restore();
+			handsCtx.rotate(minutesDegree + 1.5*Math.PI);
+			
+			handsCtx.fillStyle = foregroundColor;
+			handsCtx.beginPath();
+			handsCtx.moveTo(
+				-minuteHandPivot,
+				-minuteHandInnerWidth/2
+			);
+			handsCtx.lineTo(
+				minuteHandLength - minuteHandPivot,
+				-minuteHandOuterWidth/2
+			);
+			handsCtx.lineTo(
+				minuteHandLength - minuteHandPivot,
+				minuteHandOuterWidth/2
+			);
+			handsCtx.lineTo(
+				-minuteHandPivot,
+				minuteHandInnerWidth/2
+			);
+			handsCtx.closePath();
+			
+			handsCtx.fill();
+			
+			handsCtx.restore();
+		}
+		
+		function renderHourHand(){
+			handsCtx.save();
+			
+			var hoursDegree = currentHour/(12*3600) * 2*Math.PI;
+			
+			handsCtx.rotate(hoursDegree + 1.5*Math.PI);
+			
+			handsCtx.fillStyle = foregroundColor;
+			handsCtx.beginPath();
+			handsCtx.moveTo(
+				-hourHandPivot,
+				-hourHandInnerWidth/2
+			);
+			handsCtx.lineTo(
+				hourHandLength - hourHandPivot,
+				-hourHandOuterWidth/2
+			);
+			handsCtx.lineTo(
+				hourHandLength - hourHandPivot,
+				hourHandOuterWidth/2
+			);
+			handsCtx.lineTo(
+				-hourHandPivot,
+				hourHandInnerWidth/2
+			);
+			handsCtx.closePath();
+			
+			handsCtx.fill();
+			
+			handsCtx.restore();
 		}
 
-		secondsCtx.clearRect(0, 0, secondsRender.width, secondsRender.height);
-
-		secondsCtx.save();
-
-		secondsCtx.translate(
-			center*scaleFactor,
-			center*scaleFactor
-		);
-		secondsCtx.rotate(1.5*Math.PI);
-		
-		var secondsDegree = (currentMillisecond/(60000 - minuteGap)) * 2 * Math.PI;
-		if(secondsDegree > 2*Math.PI){
-			secondsDegree = 2*Math.PI;
-		}
-		
-		secondsCtx.save();
-		secondsCtx.rotate(secondsDegree);
-		secondsCtx.drawImage(secondsHand, 0 - secondsHand.width + secondsHand.width * (secondsHandPivot * 0.01), 0 - secondsHand.height / 2);
-		secondsCtx.restore();
-		
-		secondsCtx.restore();
-
-		initialRender = false;
 	}
 	
 	function animationLoop(){
 		render();
-		requestAnimFrame(animationLoop);
+		requestAnimationFrame(animationLoop);
 	};
 
 	return {
