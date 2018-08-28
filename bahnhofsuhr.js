@@ -23,7 +23,7 @@ function Bahnhofsuhr(containerId, args){
 	args = args === undefined ? {} : args;
 
 	// RGB color of the clock face
-	var backgroundColor = 		args.backgroundColor 		=== undefined ? 'rgb(239, 239, 239)' : args.backgroundColor;
+	var backgroundColor = 		args.backgroundColor 		=== undefined ? '#FAFAFA' : args.backgroundColor;
 	
 	// RGB color of the minute/hour hands and the minute indices
 	var foregroundColor = 		args.foregroundColor 		=== undefined ? 'rgb(62, 62, 62)' : args.foregroundColor;
@@ -71,7 +71,7 @@ function Bahnhofsuhr(containerId, args){
 	var minuteHandPivot = 		args.minuteHandPivot 		=== undefined ? 12 : args.minuteHandPivot;
 	
 	// Total length of the seconds hand
-	var secondsHandLength = 	args.secondsHandLength 		=== undefined ? 53 : args.secondsHandLength;
+	var secondsHandLength = 	args.secondsHandLength 		=== undefined ? 52.2 : args.secondsHandLength;
 	
 	// Width of the narrow part of the seconds hand
 	var secondsHandWidth = 		args.secondsHandWidth 		=== undefined ? 1.4 : args.secondsHandWidth;
@@ -113,7 +113,7 @@ function Bahnhofsuhr(containerId, args){
 	var borderWidth =			args.borderWidth 			=== undefined ? 2.5 : args.borderWidth;
 
 	// Border color
-	var borderColor =			args.borderColor 			=== undefined ? "rgb(150, 150, 150)" : args.borderColor;
+	var borderColor =			args.borderColor 			=== undefined ? "#999999" : args.borderColor;
 
 	// Show Logo (or any image) on the clock face
 	var showLogo =				args.showLogo 				=== undefined ? false : args.showLogo;
@@ -242,7 +242,7 @@ function Bahnhofsuhr(containerId, args){
 		}
 	}
 	
-	setTime(1530106317561);
+	//setTime(1530106317561);
 	scale();
 	animationLoop();
 
@@ -330,16 +330,8 @@ function Bahnhofsuhr(containerId, args){
 	function renderClockCircle(){
 		faceCtx.save();
 		faceCtx.beginPath();
-		faceCtx.arc(
-			center,
-			center,
-			defaultSize/2,
-			0,
-			2 * Math.PI,
-			false
-		);
+		
 		faceCtx.fillStyle = backgroundColor;
-		faceCtx.fill();
 		
 		if(showBorder){
 			faceCtx.beginPath();
@@ -353,7 +345,19 @@ function Bahnhofsuhr(containerId, args){
 			);
 			faceCtx.strokeStyle = borderColor;
 			faceCtx.lineWidth = renderBorderWidth;
+			faceCtx.fill();
 			faceCtx.stroke();
+			
+		} else {
+			faceCtx.arc(
+				center,
+				center,
+				defaultSize/2,
+				0,
+				2 * Math.PI,
+				false
+			);
+			faceCtx.fill();
 		}
 		
 		faceCtx.restore();
